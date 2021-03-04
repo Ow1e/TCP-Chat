@@ -4,12 +4,13 @@ import json
 from connections import send
 
 HEADER = 64
-PORT = 5005
+PORT = 5000
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 PASSWORD = "gamer"
 DISCONNECT_MESSAGE = "exit"
+PASSWORD_ENABLED = True
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
@@ -39,16 +40,20 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
                 send("You have been exited from AIR", conn)
-
+            elif msg == "$Welcome$" and PASSWORD_ENABLED == False:
+                with open("data/message.log") as f:
+                    send(f.read(), conn)
+            
             print(f"[{addr}] {msg}")
             if connected==True:
-                if sudo==False and not msg.split()[0]=="sudo":
+                if sudo==False and not msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     send('You cannot access any data, to do so please do "sudo {password}"', conn)
-                elif msg.split()[0]=="sudo":
+                elif msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     if len(msg.split())==2:
                         if msg.split()[1]==PASSWORD:
                             sudo = True
-                            send("[AUTH] You are now in AIR", conn)
+                            with open("data/message.log") as f:
+                                send(f.read(), conn)
                         else:
                             send("[AUTH] Wrong password, deleting thread", conn)
                             connected = False

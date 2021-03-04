@@ -29,6 +29,7 @@ def send(msg):
     print(client.recv(2048).decode(FORMAT))
 
 working = True
+send("$Welcome$")
 while working:
     cmd = input(">>> ")
     if cmd=="exit":
