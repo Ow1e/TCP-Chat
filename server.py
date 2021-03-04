@@ -4,7 +4,7 @@ import json
 from connections import send
 
 HEADER = 64
-PORT = 5000
+PORT = 5005
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
@@ -18,20 +18,10 @@ def generate(number=10, string=" "):
     product = ""
     for i in range(number):
         product = (product+string)
+    return product
 
 def run_cmd(cmd):
-    if cmd.split()[0]=="help":
-        with open("data/help.txt") as f:
-            return str(f.read())
-    elif cmd.split()[0]=="about":
-        with open("data/about.txt") as f:
-            return str(f.read())
-    elif cmd.split()[0]=="secret":
-        product = ""
-        with open("secrets.json") as f:
-            json_data = json.load(f)
-        for i in json_data:
-            product += f"\n{i['name']}{generate(10-len(i['name']))}| {i['date']}"
+    return "Satisfied"
 
 def handle_server():
     while True:
@@ -74,7 +64,7 @@ def handle_client(conn, addr):
 
 def start():
     server.listen()
-    print(f"[LISTENING] Server is listening on {SERVER}")
+    print(f"[LISTENING] Server is listening on {SERVER}:{int(PORT)}")
     while True:
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))

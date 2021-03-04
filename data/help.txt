@@ -1,5 +1,1 @@
 Help | AIR
-help - get help nerd
-about - learn about AIR
-info <name> - find data about someone
-secret <type> <name> - find a secret

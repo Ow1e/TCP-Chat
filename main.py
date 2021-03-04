@@ -1,10 +1,19 @@
 import socket
 
+working = True
+while working:
+    ADRESS = input("IP>>> ")
+    if ADRESS.__contains__(":"):
+        working = False
+    else:
+        print("Please use IP:PORT")
+
+
 HEADER = 64
-PORT = 5000
+PORT = int(ADRESS.split(":")[1])
 FORMAT = 'utf-8'
 DISCONNECT_MESSAGE = "exit"
-SERVER = "192.168.86.24"
+SERVER = ADRESS.split(":")[0]
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
