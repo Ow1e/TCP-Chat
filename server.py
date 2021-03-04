@@ -1,5 +1,6 @@
 import socket 
 import threading
+import json
 from connections import send
 
 HEADER = 64
@@ -13,6 +14,11 @@ DISCONNECT_MESSAGE = "exit"
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
 
+def generate(number=10, string=" "):
+    product = ""
+    for i in range(number):
+        product = (product+string)
+
 def run_cmd(cmd):
     if cmd.split()[0]=="help":
         with open("data/help.txt") as f:
@@ -20,6 +26,12 @@ def run_cmd(cmd):
     elif cmd.split()[0]=="about":
         with open("data/about.txt") as f:
             return str(f.read())
+    elif cmd.split()[0]=="secret":
+        product = ""
+        with open("secrets.json") as f:
+            json_data = json.load(f)
+        for i in json_data:
+            product += f"\n{i['name']}{generate(10-len(i['name']))}| {i['date']}"
 
 def handle_server():
     while True:
