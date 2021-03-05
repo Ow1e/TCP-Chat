@@ -6,7 +6,7 @@ with open('key.key') as f:
 f = Fernet(KEY)
 
 def send(msg, conn, format="utf-8"):
-    conn.send(msg.encode(format))
+    conn.send(f.encrypt(msg.encode()))
 
 def send_raw(binary, conn):
     conn.send(binary)

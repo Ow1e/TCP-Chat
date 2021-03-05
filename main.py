@@ -32,7 +32,7 @@ def decrypt(binary, key):
 
 def key():
     if os.path.exists('key.key'):
-        with open('key.key', 'wb') as f:
+        with open('key.key') as f:
             return f.read()
     else:
         sys.exit("No key found!")
