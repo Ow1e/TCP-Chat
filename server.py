@@ -13,7 +13,7 @@ ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 PASSWORD = "gamer"
 DISCONNECT_MESSAGE = "exit"
-PASSWORD_ENABLED = True
+PASSWORD_ENABLED = False
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
