@@ -7,16 +7,19 @@ from cryptography.fernet import Fernet
 
 
 HEADER = 64
-PORT = 5000
+PORT = 5080
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
 PASSWORD = "gamer"
 DISCONNECT_MESSAGE = "exit"
-PASSWORD_ENABLED = False
+PASSWORD_ENABLED = True
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
+
+global IP_LIST
+IP_LIST = []
 
 def encrypt(binary, key):
     f = Fernet(key)
@@ -37,8 +40,13 @@ def key():
             f.write(key)
         with open('key.key') as f:
             return f.read()
-
+global KEY
 KEY = key()
+
+def broadcast(msg):
+    f = Fernet(KEY)
+    for i in IP_LIST:
+        send(msg, i)
 
 print(decrypt(encrypt("Encryption works fine on server end!".encode(), KEY), KEY).decode())
 
@@ -49,7 +57,7 @@ def generate(number=10, string=" "):
     return product
 
 def run_cmd(cmd):
-    return "Satisfied"
+    broadcast(cmd)
 
 def handle_server():
     while True:
@@ -59,6 +67,7 @@ def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     sudo = False
     connected = True
+    IP_LIST.append(conn)
     while connected:
         msg_length = conn.recv(HEADER).decode(FORMAT)
         if msg_length:
@@ -75,6 +84,8 @@ def handle_client(conn, addr):
             if connected==True:
                 if sudo==False and not msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     send('You cannot access any data, to do so please do "sudo {password}"', conn)
+                elif msg=="":
+                    send("Updated", conn)
                 elif msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     if len(msg.split())==2:
                         if msg.split()[1]==PASSWORD:
@@ -101,7 +112,7 @@ def start():
         conn, addr = server.accept()
         thread = threading.Thread(target=handle_client, args=(conn, addr))
         thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+        print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 2}")
 
 server_term = threading.Thread(target=handle_server)
 server_term.start()

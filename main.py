@@ -3,6 +3,7 @@ import os
 import sys
 from cryptography.fernet import Fernet
 
+clear_cmd = 'clear'
 working = True
 while working:
     ADRESS = input("IP>>> ")
@@ -11,6 +12,8 @@ while working:
     else:
         print("Please use IP:PORT")
 
+with open('messages.log', 'w') as f:
+    f.write("")
 
 HEADER = 64
 PORT = int(ADRESS.split(":")[1])
@@ -46,7 +49,15 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
-    print(decrypt(client.recv(2048), KEY).decode(FORMAT))
+    message = (decrypt(client.recv(2048), KEY).decode(FORMAT))
+    with open("messages.log", "a") as f:
+        if message!="$Update$":
+            f.write(message+"\n")
+            os.system(clear_cmd)
+    with open('messages.log') as f:
+        print(f.read())
+
+    
 
 working = True
 send("$Welcome$")
