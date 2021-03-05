@@ -51,11 +51,12 @@ def send(msg):
     client.send(message)
     message = (decrypt(client.recv(2048), KEY).decode(FORMAT))
     with open("messages.log", "a") as f:
-        if message!="$Update$":
+        if not message=="$Update$":
             f.write(message+"\n")
-            os.system(clear_cmd)
+        os.system(clear_cmd)
     with open('messages.log') as f:
-        print(f.read())
+        print(f.read(), end="")
+        print(msg)
 
     
 
@@ -65,7 +66,7 @@ while working:
     cmd = input(">>> ")
     if cmd=="exit":
         print("Exiting...")
-        send(cmd)
+        send(cmd+" ")
         working = False
     else:
         send(cmd)

@@ -85,7 +85,7 @@ def handle_client(conn, addr):
                 if sudo==False and not msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     send('You cannot access any data, to do so please do "sudo {password}"', conn)
                 elif msg=="":
-                    send("Updated", conn)
+                    send("$Update$", conn)
                 elif msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     if len(msg.split())==2:
                         if msg.split()[1]==PASSWORD:
