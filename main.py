@@ -1,4 +1,7 @@
 import socket
+import os
+import sys
+from cryptography.fernet import Fernet
 
 working = True
 while working:
@@ -19,6 +22,23 @@ ADDR = (SERVER, PORT)
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
+def encrypt(binary, key):
+    f = Fernet(key)
+    return f.encrypt(binary)
+
+def decrypt(binary, key):
+    f = Fernet(key)
+    return f.decrypt(binary)
+
+def key():
+    if os.path.exists('key.key'):
+        with open('key.key', 'wb') as f:
+            return f.read()
+    else:
+        sys.exit("No key found!")
+
+KEY = key()
+
 def send(msg):
     message = msg.encode(FORMAT)
     msg_length = len(message)
@@ -26,7 +46,7 @@ def send(msg):
     send_length += b' ' * (HEADER - len(send_length))
     client.send(send_length)
     client.send(message)
-    print(client.recv(2048).decode(FORMAT))
+    print(decrypt(client.recv(2048), KEY).decode(FORMAT))
 
 working = True
 send("$Welcome$")

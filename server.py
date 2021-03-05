@@ -1,7 +1,10 @@
 import socket 
 import threading
 import json
+import os
 from connections import send
+from cryptography.fernet import Fernet
+
 
 HEADER = 64
 PORT = 5000
@@ -14,6 +17,30 @@ PASSWORD_ENABLED = True
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
+
+def encrypt(binary, key):
+    f = Fernet(key)
+    return f.encrypt(binary)
+
+def decrypt(binary, key):
+    f = Fernet(key)
+    return f.decrypt(binary)
+
+def key():
+    try:
+        with open('key.key') as f:
+            return f.read()
+    except Exception as e:
+        with open('key.key', 'wb') as f:
+            print('Creating Key...')
+            key = Fernet.generate_key()
+            f.write(key)
+        with open('key.key') as f:
+            return f.read()
+
+KEY = key()
+
+print(decrypt(encrypt("Encryption works fine on server end!".encode(), KEY), KEY).decode())
 
 def generate(number=10, string=" "):
     product = ""
