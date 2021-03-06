@@ -7,7 +7,7 @@ from cryptography.fernet import Fernet
 
 
 HEADER = 64
-PORT = 5080
+PORT = 5020
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
@@ -42,12 +42,6 @@ def key():
             return f.read()
 global KEY
 KEY = key()
-
-def broadcast(msg):
-    f = Fernet(KEY)
-    for i in IP_LIST:
-        send(msg, i)
-
 print(decrypt(encrypt("Encryption works fine on server end!".encode(), KEY), KEY).decode())
 
 def generate(number=10, string=" "):
@@ -57,7 +51,10 @@ def generate(number=10, string=" "):
     return product
 
 def run_cmd(cmd):
-    broadcast(cmd)
+    with open('server.log', 'a') as f:
+        f.write(cmd+"\n")
+    data = open('server.log').read()
+    return data
 
 def handle_server():
     while True:
@@ -76,16 +73,20 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
                 send("You have been exited from AIR", conn)
-            elif msg == "$Welcome$" and PASSWORD_ENABLED == False:
+            elif msg == "$Welcome$" and PASSWORD_ENABLED==False:
                 with open("data/message.log") as f:
                     send(f.read(), conn)
             
             print(f"[{addr}] {msg}")
             if connected==True:
-                if sudo==False and not msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
+                if msg=="" and sudo==False:
+                    send('You cannot access any data, to do so please do "sudo {password}"', conn)
+                elif sudo==False and not msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     send('You cannot access any data, to do so please do "sudo {password}"', conn)
                 elif msg=="":
-                    send("$Update$", conn)
+                    with open('server.log') as f:
+                        data = f.read()
+                    send(data, conn)
                 elif msg.split()[0]=="sudo" and PASSWORD_ENABLED==True:
                     if len(msg.split())==2:
                         if msg.split()[1]==PASSWORD:

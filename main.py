@@ -12,9 +12,7 @@ while working:
     else:
         print("Please use IP:PORT")
 
-with open('messages.log', 'w') as f:
-    f.write("")
-
+global LOG
 HEADER = 64
 PORT = int(ADRESS.split(":")[1])
 FORMAT = 'utf-8'
@@ -50,18 +48,13 @@ def send(msg):
     client.send(send_length)
     client.send(message)
     message = (decrypt(client.recv(2048), KEY).decode(FORMAT))
-    with open("messages.log", "a") as f:
-        if not message=="$Update$":
-            f.write(message+"\n")
-        os.system(clear_cmd)
-    with open('messages.log') as f:
-        print(f.read(), end="")
-        print(msg)
+    return message
+    
 
     
 
 working = True
-send("$Welcome$")
+print(send("$Welcome$"))
 while working:
     cmd = input(">>> ")
     if cmd=="exit":
@@ -69,4 +62,6 @@ while working:
         send(cmd+" ")
         working = False
     else:
-        send(cmd)
+        message = send(cmd)
+        os.system(clear_cmd)
+        print(message)
