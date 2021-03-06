@@ -2,6 +2,7 @@ import socket
 import threading
 import json
 import os
+import sys
 from connections import send
 from cryptography.fernet import Fernet
 
@@ -58,7 +59,9 @@ def run_cmd(cmd):
 
 def handle_server():
     while True:
-        print(run_cmd(input("")))
+        cmd = input("")
+        if cmd=="exit":
+            sys.exit("Exited AIR Server")
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
