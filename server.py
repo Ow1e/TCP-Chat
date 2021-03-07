@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 
 
 HEADER = 64
-PORT = 5050
+PORT = 5005
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
@@ -61,8 +61,10 @@ def run_cmd(cmd, nick):
 def handle_server():
     while True:
         cmd = input("")
-        if cmd=="exit":
-            sys.exit("Exited AIR Server")
+        with open('server.log', 'a') as f:
+            f.write("[Server] "+cmd+"\n")
+            f.close()
+        print("[Server, Unknown] "+cmd)
 
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
