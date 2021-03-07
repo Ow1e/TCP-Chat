@@ -52,9 +52,10 @@ def send(msg):
     
 
     
-
+nickname = input("(Nickname)>>> ")
 working = True
-print(send("$Welcome$"))
+if nickname!="":
+    print(send("nick:"+nickname))
 while working:
     cmd = input(">>> ")
     if cmd=="exit":

@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 
 
 HEADER = 64
-PORT = 5020
+PORT = 5050
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
@@ -51,9 +51,10 @@ def generate(number=10, string=" "):
         product = (product+string)
     return product
 
-def run_cmd(cmd):
+def run_cmd(cmd, nick):
     with open('server.log', 'a') as f:
-        f.write(cmd+"\n")
+        f.write(f"{nick}: "+cmd+"\n")
+        f.close()
     data = open('server.log').read()
     return data
 
@@ -66,6 +67,7 @@ def handle_server():
 def handle_client(conn, addr):
     print(f"[NEW CONNECTION] {addr} connected.")
     sudo = False
+    nickname = "Anonymous"
     connected = True
     IP_LIST.append(conn)
     while connected:
@@ -76,11 +78,11 @@ def handle_client(conn, addr):
             if msg == DISCONNECT_MESSAGE:
                 connected = False
                 send("You have been exited from AIR", conn)
-            elif msg == "$Welcome$" and PASSWORD_ENABLED==False:
-                with open("data/message.log") as f:
-                    send(f.read(), conn)
+            elif msg.startswith("nick:"):
+                nickname = msg.split(":")[1]
+                print(f"[NICKNAME]({addr}) Nickname is now {nickname}")
             
-            print(f"[{addr}] {msg}")
+            print(f"[{addr}, {nickname}] {msg}")
             if connected==True:
                 if msg=="" and sudo==False:
                     send('You cannot access any data, to do so please do "sudo {password}"', conn)
@@ -101,7 +103,7 @@ def handle_client(conn, addr):
                             connected = False
                     else: send("[SUDO] SYNTAX: sudo {password}", conn)
                 else:
-                    send(run_cmd(msg), conn)
+                    send(run_cmd(msg, nickname), conn)
             else:
                 print(f"[DISCONECT] {addr} disconected")
             
