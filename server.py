@@ -8,7 +8,7 @@ from cryptography.fernet import Fernet
 
 
 HEADER = 64
-PORT = 5005
+PORT = 5050
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'
@@ -18,6 +18,9 @@ PASSWORD_ENABLED = True
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
+
+with open('server.log', 'w') as f:
+    f.close()
 
 global IP_LIST
 IP_LIST = []
@@ -51,11 +54,18 @@ def generate(number=10, string=" "):
         product = (product+string)
     return product
 
-def run_cmd(cmd, nick):
+def run_cmd(cmd : str, nick):
+    if cmd.startswith("nick:"):
+        command = True
+        command_output = "Changed nickname!\n"
+    else:
+        command = False
     with open('server.log', 'a') as f:
-        f.write(f"{nick}: "+cmd+"\n")
+        if command==False:
+            f.write(f"{nick}: "+cmd+"\n")
+            command_output = ""
         f.close()
-    data = open('server.log').read()
+    data = open('server.log').read()+command_output
     return data
 
 def handle_server():
